@@ -1,0 +1,15 @@
+﻿using Hotel.Server.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Hotel.Server.Models
+{
+    internal class DatabaseSettings : IDatabaseSettings
+    {
+        public string DatabaseName { get; set; }
+
+        public string Connectionstring { get; set; }
+    }
+}
