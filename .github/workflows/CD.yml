@@ -31,14 +31,14 @@ jobs:
             docker build Hotel.Client/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
         
-        # # step 5: Push Server Image to Azure Container 
-        # - name: 'Deploy to Azure Container Instances'
-        #   uses: 'azure/aci-deploy@v1'
-        #   with:
-        #     resource-group: fakehotelres
-        #     dns-name-label: url-for-container
-        #     image: {{ secrets.REGISTRY_LOGIN_SERVER }}/nodejssampleapp:${{ github.sha }}
-        #     registry-username: ${{ secrets.REGISTRY }}
-        #     registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        #     name: contoso-container
-        #     location: 'west us'
+        # step 5: Push Server Image to Azure Container 
+        - name: 'Deploy to Azure Container Instances'
+          uses: 'azure/aci-deploy@v1'
+          with:
+            resource-group: fakehotelres
+            dns-name-label: fakehotelreg
+            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/server:${{ github.sha }}
+            registry-username: ${{ secrets.REGISTRY }}
+            registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+            name: fakehotelserver
+            location: 'north eu'
