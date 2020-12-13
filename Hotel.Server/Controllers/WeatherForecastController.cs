@@ -51,6 +51,13 @@ namespace Hotel.Server.Controllers
         }
 
         [HttpGet]
+        [Route("bar")]
+        public ActionResult GetBar()
+        {
+            return Ok("Foobar");
+        }
+
+        [HttpGet]
         [Route("hello")]
         public async Task<ActionResult> GetHello()
         {
