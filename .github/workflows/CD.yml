@@ -19,18 +19,26 @@ jobs:
             username: ${{ secrets.REGISTRY }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
 
-        # step 3: Build Docker Server Image
-        - name: Build Server Image
-          run: docker build Hotel.Server/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/server:${{ github.sha }}
+        # step 3: Build and Push Docker Server Image
+        - name: Build and Push Server Image to ACR
+          run:  |
+            docker build Hotel.Server/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/server:${{ github.sha }}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/server:${{ github.sha }}
 
-        # step 4: Push Server Image to Azure Registry
-        - name: Push Server Image To ACR
-          run: docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/server:${{ github.sha }}
-
-        # step 5: Build Docker Client Image
-        - name: Build Client Image
-          run: docker build Hotel.Client/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
-
-        # step 6: Push Client Image to Azure Registry
-        - name: Push Client Image To ACR
-          run: docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
+        # step 4: Build and Push Client Image to ACR
+        - name: Build and Push Client Image to ACR
+          run: | 
+            docker build Hotel.Client/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
+        
+        # # step 5: Push Server Image to Azure Container 
+        # - name: 'Deploy to Azure Container Instances'
+        #   uses: 'azure/aci-deploy@v1'
+        #   with:
+        #     resource-group: fakehotelres
+        #     dns-name-label: url-for-container
+        #     image: {{ secrets.REGISTRY_LOGIN_SERVER }}/nodejssampleapp:${{ github.sha }}
+        #     registry-username: ${{ secrets.REGISTRY }}
+        #     registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        #     name: contoso-container
+        #     location: 'west us'
