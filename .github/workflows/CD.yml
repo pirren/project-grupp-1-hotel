@@ -31,7 +31,13 @@ jobs:
             docker build Hotel.Client/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
         
-        # step 5: Push Server Image to Azure Container 
+        # Azure login
+        - name: Azure Login
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        # step 6: Push Server Image to Azure Container 
         - name: 'Deploy to Azure Container Instances'
           uses: 'azure/aci-deploy@v1'
           with:
