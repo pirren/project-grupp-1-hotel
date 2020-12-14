@@ -40,11 +40,11 @@ jobs:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
 
         - name: Deploy Container to Azure App Service
-          uses: azure/webapps-container-deploy@v1
+          uses: azure/webapps-container-deploy@v2
           with:
             app-name: fakehotelserver
             images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/server:${{ github.sha }}
-            
+
         # try this later
         # - name: Deploy to Azure Container Instance 
         #   uses: Azure/aci-deploy@v1
