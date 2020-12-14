@@ -47,4 +47,4 @@ jobs:
             registry-username: ${{ secrets.REGISTRY }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: fakehotelserver
-            location: 'north eu'
+            location: 'northeurope'
