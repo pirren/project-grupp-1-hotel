@@ -25,20 +25,3 @@ jobs:
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-
-    # - name: Building web app
-    #   uses: azure/appservice-build@v2
-    #   with:
-    #     source-directory: 
-
-  deploy:
-    needs: build
-    name: Deploy App
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: deploy to azure web app
-      uses: azure/appservice-actions/webapp@master
-      with: 
-        app-name: mynewestwebapplication
-        publish-profile: ${{ secrets.AZURE_SERVER_PUBLISH_PROFILE }}   
