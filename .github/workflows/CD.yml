@@ -1,17 +1,22 @@
 name: Continous Delivery
 on:
   push:
-    branches: [ main ]
+    branches: [ development ]
 
 jobs:
     build:
         runs-on: ubuntu-latest
         steps:  
-        # step 1: Checkout GitHub Action
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
 
-        # step 2: Docker login
+        - name: Docker login to ACR
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.REGISTRY }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+
         - name: ACR login
           uses: azure/docker-login@v1
           with:
@@ -19,32 +24,39 @@ jobs:
             username: ${{ secrets.REGISTRY }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
 
-        # step 3: Build and Push Docker Server Image
         - name: Build and Push Server Image to ACR
           run:  |
             docker build Hotel.Server/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/server:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/server:${{ github.sha }}
 
-        # step 4: Build and Push Client Image to ACR
         - name: Build and Push Client Image to ACR
           run: | 
             docker build Hotel.Client/ -t ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER}}/client:${{ github.sha }}
         
-        # Azure login
-        - name: Azure Login
+        - name: Azure Service Principal authentication
           uses: azure/login@v1
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-        - name: Deploy to Azure Container Instance 
-          uses: Azure/aci-deploy@v1
+        - name: Deploy Container to Azure App Service
+          uses: azure/webapps-container-deploy@v1
           with:
-            resource-group: fakehotelres
-            dns-name-label: fakehotelreg
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/server:${{ github.sha }}
-            name: fakehotelserver
-            location: 'northeurope'
+            app-name: fakehotelserver
+            images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/server:${{ github.sha }}
+            
+        # try this later
+        # - name: Deploy to Azure Container Instance 
+        #   uses: Azure/aci-deploy@v1
+        #   with:
+        #     resource-group: fakehotelres
+        #     dns-name-label: fakehotelreg
+        #     image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/server:${{ github.sha }}
+        #     name: fakehotelserver
+        #     location: 'northeurope'
+
+
+
 
         # # step 6: Push Server Image to Azure Container 
         # - name: 'Deploy to Azure Container Instances'
